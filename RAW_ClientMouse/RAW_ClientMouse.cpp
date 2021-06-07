@@ -19,12 +19,12 @@ struct {
 		// Keep in mind these are all deltas,
 		// they'll change for one frame/cycle
 		// before going back to zero.
-		int x = 0;
-		int y = 0;
-		int wheel = 0;
+		long x = 0;
+		long y = 0;
+		long wheel = 0;
 	} mouse;
 } input;
-int oldX = 0, oldY = 0;
+long oldX = 0, oldY = 0;
 // Window message callback.
 LRESULT CALLBACK EventHandler(HWND, unsigned, WPARAM, LPARAM);
 
@@ -39,9 +39,6 @@ int main() {
 	// Make std::cout faster:
 	std::ios_base::sync_with_stdio(false);
 
-	// Get console window:
-	FILE* console_output;
-	FILE* console_error;
 
 	//if (AllocConsole()) {
 	//	freopen_s(&console_output, "CONOUT$", "w", stdout);
@@ -129,7 +126,7 @@ int main() {
 		}
 
 		// Output mouse input to console:
-		int a = 0, b = 0, c = 0;
+		int a = 0, b = 0, c = 0, d = 0, e = 0;
 		if (GetAsyncKeyState(VK_LBUTTON))
 		{
 			a = 1;
@@ -142,22 +139,40 @@ int main() {
 		{
 			c = 1;
 		}
+		if (GetAsyncKeyState(VK_XBUTTON1))
+		{
+			d = 1;
+		}
+		if (GetAsyncKeyState(VK_XBUTTON2))
+		{
+			e = 1;
+		}
 
 		if (input.mouse.x > 127)
 			oldX = input.mouse.x - 127;
 		else if (input.mouse.x < -127)
 			oldX = input.mouse.x + 127;
-		else
+		else {
 			input.mouse.x += oldX;
+			if (input.mouse.x > 127)
+				oldX = input.mouse.x - 127;
+			else if (input.mouse.x < -127)
+				oldX = input.mouse.x + 127;
+		}
 
 		if (input.mouse.y > 127)
 			oldY = input.mouse.y - 127;
 		else if (input.mouse.y < -127)
 			oldY = input.mouse.y + 127;
-		else
+		else {
 			input.mouse.y += oldY;
+			if (input.mouse.y > 127)
+				oldY = input.mouse.y - 127;
+			else if (input.mouse.y < -127)
+				oldY = input.mouse.y + 127;
+		}
 
-		arduino.Send(input.mouse.x, input.mouse.y, a, b, c, input.mouse.wheel);
+		arduino.Send(input.mouse.x, input.mouse.y, a, b, c, input.mouse.wheel, d, e);
 
 		
 		while (std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - t1) < (std::chrono::microseconds)2100)

@@ -36,7 +36,7 @@ private:
 public:
 	Mouse(SerialPort * pArduino);
 
-	void Send(int x, int y, int a, int b, int c, int d);
+	void Send(int x, int y, int a, int b, int c, int d, int e, int f);
 	void terminateThreads();
 
 };

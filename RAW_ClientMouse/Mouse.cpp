@@ -35,7 +35,7 @@ Mouse::Mouse(SerialPort* pArduino)
 	arduino = pArduino;
 }
 
-void Mouse::Send(int x, int y, int a, int b, int c, int d)
+void Mouse::Send(int x, int y, int a, int b, int c, int d, int e, int f)
 {
 	arduino->writeSerialPort(&x, 1);
 	arduino->writeSerialPort(&y, 1);
@@ -43,6 +43,8 @@ void Mouse::Send(int x, int y, int a, int b, int c, int d)
 	arduino->writeSerialPort(&b, 1);
 	arduino->writeSerialPort(&c, 1);
 	arduino->writeSerialPort(&d, 1);
+	arduino->writeSerialPort(&e, 1);
+	arduino->writeSerialPort(&f, 1);
 }
 
 void Mouse::terminateThreads() {
