@@ -28,6 +28,39 @@ long oldX = 0, oldY = 0;
 // Window message callback.
 LRESULT CALLBACK EventHandler(HWND, unsigned, WPARAM, LPARAM);
 
+void round(long& x, long& y) {
+	if (x >= 127) {
+		int ox = x - 127;
+		x -= ox;
+		oldX += ox;
+	}
+	else if (x <= -127) {
+		int ox = x + 127;
+		x -= ox;
+		oldX += ox;
+	}
+	else {
+		x += oldX;
+	}
+	if (y >= 127) {
+		int oy = y - 127;
+		y -= oy;
+		oldY += oy;
+	}
+	else if (y <= -127) {
+		int oy = y + 127;
+		y -= oy;
+		oldY += oy;
+	}
+	else {
+		y += oldY;
+	}
+
+	if (x >= 127 || x <= -127 || y >= 127 || y <= -127)
+		round(x, y);
+}
+
+
 // Make sure to set the entrypoint to "mainCRTStartup", or change this to WinMain.
 int main() {
 	std::string portString;
@@ -148,33 +181,11 @@ int main() {
 			e = 1;
 		}
 
-		if (input.mouse.x > 127)
-			oldX = input.mouse.x - 127;
-		else if (input.mouse.x < -127)
-			oldX = input.mouse.x + 127;
-		else {
-			input.mouse.x += oldX;
-			if (input.mouse.x > 127)
-				oldX = input.mouse.x - 127;
-			else if (input.mouse.x < -127)
-				oldX = input.mouse.x + 127;
-		}
-
-		if (input.mouse.y > 127)
-			oldY = input.mouse.y - 127;
-		else if (input.mouse.y < -127)
-			oldY = input.mouse.y + 127;
-		else {
-			input.mouse.y += oldY;
-			if (input.mouse.y > 127)
-				oldY = input.mouse.y - 127;
-			else if (input.mouse.y < -127)
-				oldY = input.mouse.y + 127;
-		}
+		round(input.mouse.x, input.mouse.y);
 
 		arduino.Send(input.mouse.x, input.mouse.y, a, b, c, input.mouse.wheel, d, e);
 
-		
+
 		while (std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - t1) < (std::chrono::microseconds)2100)
 		{
 			//std::cout << "Wait\n";
